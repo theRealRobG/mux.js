@@ -12,6 +12,8 @@ var dashInit = segments['dash-608-captions-init.mp4']();
 var dashSegment = segments['dash-608-captions-seg.m4s']();
 var malformedSei = segments['malformed-sei.m4s']();
 var malformedSeiInit = segments['malformed-sei-init.mp4']();
+var hevcInit = segments['hevc_init.mp4']();
+var hevcSegment = segments['hevc_segment.mp4']();
 
 var mp4Helpers = require('./utils/mp4-helpers');
 var box = mp4Helpers.box;
@@ -59,6 +61,39 @@ QUnit.test('parse captions from real segment', function(assert) {
     'real segment caption has correct endTime');
   assert.equal(cc.captionStreams.CC1, true,
     'real segment caption streams have correct settings');
+});
+
+QUnit.test('parse captions from real hevc segment', function(assert) {
+  var trackIds;
+  var timescales;
+  var cc;
+
+  trackIds = probe.videoTrackIds(hevcInit);
+  timescales = probe.timescale(hevcInit);
+
+  cc = captionParser.parse(hevcSegment, trackIds, timescales);
+
+  assert.equal(cc.captions.length, 2);
+  assert.equal(cc.captions[0].text, '(grand orchestral fanfare\nplaying)', 
+    'hevc segment caption CC1 has correct text');
+  assert.equal(cc.captions[0].stream, 'CC1', 
+    'hevc segment caption CC1 has correct stream');
+  assert.equal(cc.captions[0].startTime, 2.877875, 
+    'hevc segment caption CC1 has correct startTime');
+  assert.equal(cc.captions[0].endTime, 5.130125, 
+    'hevc segment caption CC1 has correct endTime');
+  assert.equal(cc.captions[1].text, '(grand orchestral fanfare\nplaying)', 
+    'hevc segment caption SERVICE1 has correct text');
+  assert.equal(cc.captions[1].stream, 'cc708_1', 
+    'hevc segment caption SERVICE1 has correct stream');
+  assert.equal(cc.captions[1].startTime, 2.877875, 
+    'hevc segment caption SERVICE1 has correct startTime');
+  assert.equal(cc.captions[1].endTime, 2.877875, 
+    'hevc segment caption SERVICE1 has correct endTime');
+  assert.equal(cc.captionStreams.CC1, true,
+    'hevc segment caption streams have correct CEA608 settings');
+  assert.equal(cc.captionStreams.cc708_1, true,
+    'hevc segment caption streams have correct CEA708 settings');
 });
 
 QUnit.test('parse captions when init segment received late', function(assert) {
