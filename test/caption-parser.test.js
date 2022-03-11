@@ -66,12 +66,14 @@ QUnit.test('parse captions from real segment', function(assert) {
 QUnit.test('parse captions from real hevc segment', function(assert) {
   var trackIds;
   var timescales;
+  var codec;
   var cc;
 
   trackIds = probe.videoTrackIds(hevcInit);
   timescales = probe.timescale(hevcInit);
+  codec = probe.tracks(hevcInit)[0].codec;
 
-  cc = captionParser.parse(hevcSegment, trackIds, timescales);
+  cc = captionParser.parse(hevcSegment, trackIds, timescales, codec);
 
   assert.equal(cc.captions.length, 2);
   assert.equal(cc.captions[0].text, '(grand orchestral fanfare\nplaying)', 
