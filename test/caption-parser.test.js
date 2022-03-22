@@ -10,6 +10,10 @@ var dashInit = segments['dash-608-captions-init.mp4']();
 // This file includes 2 segments data to force a flush
 // of the first caption. The second caption is at 200s
 var dashSegment = segments['dash-608-captions-seg.m4s']();
+var liveInit = segments['live_init.mp4']();
+var liveSegment = segments['live_segment.mp4']();
+var vodInit = segments['vod_init.mp4']();
+var vodSegment = segments['vod_segment.mp4']();
 var malformedSei = segments['malformed-sei.m4s']();
 var malformedSeiInit = segments['malformed-sei-init.mp4']();
 
@@ -59,6 +63,34 @@ QUnit.test('parse captions from real segment', function(assert) {
     'real segment caption has correct endTime');
   assert.equal(cc.captionStreams.CC1, true,
     'real segment caption streams have correct settings');
+});
+
+QUnit.test.only('parse captions from VOD segment', function(assert) {
+  var trackIds;
+  var timescales;
+  var cc;
+
+  trackIds = probe.videoTrackIds(vodInit);
+  timescales = probe.timescale(vodInit);
+
+  cc = captionParser.parse(vodSegment, trackIds, timescales);
+
+  console.log(cc);
+  assert.equal(cc.captions[0].text, ' We measure our progress');
+});
+
+QUnit.test.only('parse captions from live segment', function(assert) {
+  var trackIds;
+  var timescales;
+  var cc;
+
+  trackIds = probe.videoTrackIds(liveInit);
+  timescales = probe.timescale(liveInit);
+
+  cc = captionParser.parse(liveSegment, trackIds, timescales);
+
+  console.log(cc);
+  assert.equal(cc.captions[0].text, 'that is short and it\'s got --');
 });
 
 QUnit.test('parse captions when init segment received late', function(assert) {
