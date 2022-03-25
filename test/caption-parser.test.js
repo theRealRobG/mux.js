@@ -16,6 +16,10 @@ var vodInit = segments['vod_init.mp4']();
 var vodSegment = segments['vod_segment.mp4']();
 var malformedSei = segments['malformed-sei.m4s']();
 var malformedSeiInit = segments['malformed-sei-init.mp4']();
+// curl -r 0-1117 "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_adv_example_hevc/v1/main.mp4" --output apple_init.mp4
+var appleInit = segments['apple_init.mp4']();
+// curl -r 1118-110524 "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_adv_example_hevc/v1/main.mp4" --output apple_segment.mp4
+var appleSegment = segments['apple_segment.mp4']();
 
 var mp4Helpers = require('./utils/mp4-helpers');
 var box = mp4Helpers.box;
@@ -91,6 +95,21 @@ QUnit.test.only('parse captions from live segment', function(assert) {
 
   console.log(cc);
   assert.equal(cc.captions[0].text, 'that is short and it\'s got --');
+});
+
+QUnit.test.only('parse captions from apple segment', function(assert) {
+  var trackIds;
+  var timescales;
+  var cc;
+
+  trackIds = probe.videoTrackIds(appleInit);
+  timescales = probe.timescale(appleInit);
+
+  cc = captionParser.parse(appleSegment, trackIds, timescales);
+
+  console.log(cc);
+  assert.equal(1, 1);
+  // assert.equal(cc.captions[0].text, 'Bip!');
 });
 
 QUnit.test('parse captions when init segment received late', function(assert) {
